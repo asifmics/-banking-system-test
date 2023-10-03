@@ -5,9 +5,12 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import Checkbox from "@/Components/Checkbox.vue";
 
 const form = useForm({
     name: '',
+    account_type: '',
+    balance: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -54,6 +57,45 @@ const submit = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+            <div class="flex flex-row gap-6 justify-between">
+                <div class="mt-4 self-center">
+                    <InputLabel for="individual" value="Individual" />
+
+                    <input
+                        type="radio"
+                        id="individual"
+                        class="mt-1"
+                        value="Individual"
+                        v-model="form.account_type"
+                    />
+
+                </div>
+                <div class="mt-4 self-center">
+                    <InputLabel for="business" value="Business" />
+
+                    <input
+                        type="radio"
+                        id="business"
+                        class="mt-1"
+                        value="Business"
+                        v-model="form.account_type"
+                    />
+
+                    <InputError class="mt-2" :message="form.errors.account_type" />
+                </div>
+            </div>
+            <div class="mt-4">
+                <InputLabel for="balance" value="Balance" />
+
+                <TextInput
+                    id="balance"
+                    type="number"
+                    class="mt-1 block w-full"
+                    v-model="form.balance"
+                />
+
+                <InputError class="mt-2" :message="form.errors.balance" />
             </div>
 
             <div class="mt-4">

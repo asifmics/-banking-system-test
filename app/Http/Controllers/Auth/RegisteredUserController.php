@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\enums\TransactionTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateUserRequest;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -29,24 +32,19 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(CreateUserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        $user = User::create($request->validated());
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        if ($user->balance) {
+            $user->transactions()->create([
+               'transaction_type' => TransactionTypeEnum::DEPOSIT->value,
+                'amount' => $user->balance,
+                'fee' => 0,
+                'date' => date('d-m-Y')
+            ]);
+        }
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+        return redirect(route('login'));
     }
 }
