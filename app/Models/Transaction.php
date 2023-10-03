@@ -19,10 +19,16 @@ class Transaction extends Model
         'transaction_type' => TransactionTypeEnum::class,
         'amount' => 'double',
         'date' => 'date',
+        'fee' => 'decimal:2'
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function scopeDeposits()
+    {
+        return $this->where('transaction_type', TransactionTypeEnum::DEPOSIT->value);
     }
 }
