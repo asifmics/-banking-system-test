@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\enums\AccountTypeEnum;
+use App\enums\TransactionTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -52,5 +53,26 @@ class User extends Authenticatable
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function deposit()
+    {
+        return $this->transactionsType(TransactionTypeEnum::DEPOSIT->value);
+    }
+
+    public function withdrawal()
+    {
+        return $this->transactionsType(TransactionTypeEnum::WITHDRAWAL->value);
+    }
+
+    public function transactionsType($type)
+    {
+        return  $this->transactions()->where('transaction_type', $type)
+            ->sum('amount');
+    }
+
+    public function currentBalance()
+    {
+        return $this->deposit() - $this->withdrawal();
     }
 }
